@@ -248,9 +248,11 @@ function App({ signOut, user }) {
     setSelectedPlannerType(planner_type);
   }
 
-  function submitChoice() {
+  function submitChoice(username) {
     if (selectedBlock) {
       // alert('You Selected ' + selectedBlock + "which is " + selectedPlannerType + " planner");
+      saveUserSelection(); 
+      nextBlock();
     } else {
       alert('Please select one option before submit');
     }
@@ -378,7 +380,7 @@ function App({ signOut, user }) {
                 )
               }
               </Container>
-                <Button onClick={ () => {submitChoice(); saveUserSelection(user?.username); nextBlock();} }>Next</Button>
+                <Button onClick={ () => { submitChoice(user?.username); } }>Next</Button>
             </Body>
           )
         }
