@@ -25,7 +25,6 @@ const Container = styled.div`
   justify-content: space-between;
 `;
 
-
 const Block = styled.div`
   border: 1px solid #ddd;
   // background-color: #fff;
@@ -186,8 +185,8 @@ function App({ signOut, user }) {
         var allUserPrefs = [];
 
         for (let i=0; i<quizData.length; i++){
-          var origin_pois = rec_poi_to_table(quizData[i]["origin_result"]["rec_pois"]);
-          var test_pois = rec_poi_to_table(quizData[i]["test_result"]["rec_pois"]);
+          var origin_pois = rec_poi_to_table(quizData[i]["origin_rec_pois"]);
+          var test_pois = rec_poi_to_table(quizData[i]["test_rec_pois"]);
 
           allQuizIDs.push(quizData[i]["quiz_id"])
           allUserPrefs.push(quizData[i]["test_result"]["user_pref"])
