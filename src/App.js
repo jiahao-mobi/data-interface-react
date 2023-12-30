@@ -189,7 +189,7 @@ function App({ signOut, user }) {
           var test_pois = rec_poi_to_table(quizData[i]["test_rec_pois"]);
 
           allQuizIDs.push(quizData[i]["quiz_id"])
-          allUserPrefs.push(quizData[i]["test_result"]["user_pref"])
+          allUserPrefs.push(quizData[i]["user_pref"])
           
           if (getRandomInt(2) === 0) {
             allBlocks.push([
