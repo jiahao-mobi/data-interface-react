@@ -149,6 +149,13 @@ function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth' // 这个可选的参数让滚动效果更平滑
+  });
+};
+
 
 function App({ signOut, user }) {
   
@@ -402,9 +409,9 @@ function App({ signOut, user }) {
               </Container>
 
               <BtnContainer>
-                <Button onClick={ () => { submitChoice(user?.username, "A"); } }>A is better</Button>
-                <Button onClick={ () => { submitChoice(user?.username, "B"); } }>B is better</Button>
-                <Button onClick={ () => { submitChoice(user?.username, "Same"); } }>Hard to tell</Button>
+                <Button onClick={ () => { submitChoice(user?.username, "A"); scrollToTop(); } }>A is better</Button>
+                <Button onClick={ () => { submitChoice(user?.username, "B"); scrollToTop();} }>B is better</Button>
+                <Button onClick={ () => { submitChoice(user?.username, "Same"); scrollToTop();} }>Hard to tell</Button>
               </BtnContainer>
             </Body>
           )
