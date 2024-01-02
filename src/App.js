@@ -237,12 +237,12 @@ function App({ signOut, user }) {
   }, []); 
 
 
-  function highlightSelection(id, planner_type) {
-    setSelectedBlock(null);
-    setSelectedPlannerType(null);
-    setSelectedBlock(id);
-    setSelectedPlannerType(planner_type);
-  }
+  // function highlightSelection(id, planner_type) {
+  //   setSelectedBlock(null);
+  //   setSelectedPlannerType(null);
+  //   setSelectedBlock(id);
+  //   setSelectedPlannerType(planner_type);
+  // }
 
   function submitChoice(username) {
     if (selectedBlock) {
@@ -350,8 +350,8 @@ function App({ signOut, user }) {
                         id={`block${block.id}`}
                         class="block"
                         className={`block ${block.id === selectedBlock ? 'selected' : ''}`}
-                        isSelected={block.id === selectedBlock}
-                        onClick={() => highlightSelection(block.id, block.planner_type)}
+                        // isSelected={block.id === selectedBlock}
+                        // onClick={() => highlightSelection(block.id, block.planner_type)}
                       >
                         <h2>{block.title}</h2>
                         <Table>
