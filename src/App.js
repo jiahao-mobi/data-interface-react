@@ -1,11 +1,6 @@
 import "@aws-amplify/ui-react/styles.css";
 import {
   withAuthenticator,
-  // Button,
-  Heading,
-  Image,
-  View,
-  Card,
 } from "@aws-amplify/ui-react";
 import React, { useEffect, useState } from 'react';
 import './App.css';
@@ -265,7 +260,7 @@ function App({ signOut, user }) {
     const fetchData = async () => {
       try {
         const quizData = await fetchUserQuiz(user?.username);
-        if (quizData == undefined || quizData.length == 0) {
+        if (quizData === undefined || quizData.length === 0) {
           return;
         }
 
@@ -344,7 +339,7 @@ function App({ signOut, user }) {
   }, []); 
 
 
-  if (quizNum == undefined || quizNum == 0) {
+  if (quizNum === undefined || quizNum === 0) {
     return (<div> </div>);
   } 
 
@@ -396,7 +391,8 @@ function App({ signOut, user }) {
                             {block.pois.map((poi) => (
                               <tr key={poi.name}>
                                 <td>{poi.name}</td>
-                                <td>{JSON.stringify(poi.filter_tags)}</td>
+                                <td>{poi.filter_tags.join(', ')}</td>
+                                {/* <td>{JSON.stringify(poi.filter_tags)}</td> */}
                               </tr>
                             ))}
                           </tbody>
