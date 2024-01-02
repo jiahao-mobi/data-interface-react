@@ -174,7 +174,7 @@ function App({ signOut, user }) {
   function nextBlock() {
     if (currentIdx < blocks.length - 1) {
       setCurrentIdx((prevIndex) => (prevIndex + 1));
-      console.log(currentIdx);
+      // console.log(currentIdx);
     } else {
       setReachedEnd(true);
     }
@@ -257,9 +257,9 @@ function App({ signOut, user }) {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (username) => {
       try {
-        const quizData = await fetchUserQuiz(user?.username);
+        const quizData = await fetchUserQuiz(username);
         if (quizData === undefined || quizData.length === 0) {
           return;
         }
@@ -272,7 +272,6 @@ function App({ signOut, user }) {
         for (let i=0; i<quizData.length; i++){
           var origin_pois = rec_poi_to_table(quizData[i]["origin_rec_pois"]);
           var test_pois = rec_poi_to_table(quizData[i]["test_rec_pois"]);
-
           allQuizIDs.push(quizData[i]["quiz_id"])
           allUserPrefs.push(quizData[i]["user_pref"])
           
@@ -319,10 +318,6 @@ function App({ signOut, user }) {
             });
 
           }
-
-          // if (i === 0) {
-          //   console.log(allBlocks);
-          // }
         }
 
         setBlocks(allBlocks);
@@ -335,13 +330,56 @@ function App({ signOut, user }) {
         console.error('Error fetching data:', error);
       }
     };
-    fetchData();
-  }, []); 
+    fetchData(user?.username);
+  }, [user?.username]); 
 
 
   if (quizNum === undefined || quizNum === 0) {
     return (<div> </div>);
   } 
+
+  function render_pois(pois) {
+    return (
+      <tbody>
+        {
+          pois.map((poi, idx) => (
+            <tr key={idx}>
+              <td>{poi.name}</td>
+              <td>{poi.filter_tags.join(", ")}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    );
+  }
+
+  function render_block_to_table() {
+    var currentBlock = blocks[currentIdx];
+    var result = []
+    for (var i=0; i<currentBlock.length; i++){
+      var block = currentBlock[i];
+      
+      result.push(
+        (
+          <Block
+            key={block.id}
+          >
+            <h2>{block.title}</h2>
+            <Table>
+              <thead>
+                <tr>
+                  <th>Dining POI</th>
+                  <th>Tags</th>
+                </tr>
+              </thead>
+              {render_pois(block.pois)}
+            </Table>
+          </Block>
+        )
+      );
+    }
+    return result;
+  }
 
   return (
       <div>
@@ -373,34 +411,7 @@ function App({ signOut, user }) {
               <Container>
               {
                 // Rec A and B Block
-                blocks[currentIdx]  && (blocks[currentIdx].map(
-                    (block) => (
-                      <Block
-                        key={block.id}
-                        id={`block${block.id}`}
-                      >
-                        <h2>{block.title}</h2>
-                        <Table>
-                          <thead> {/* Table head added here */}
-                            <tr>
-                              <th>Dining POI</th>
-                              <th>Tags</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {block.pois.map((poi) => (
-                              <tr key={poi.name}>
-                                <td>{poi.name}</td>
-                                <td>{poi.filter_tags.join(', ')}</td>
-                                {/* <td>{JSON.stringify(poi.filter_tags)}</td> */}
-                              </tr>
-                            ))}
-                          </tbody>
-                        </Table>
-                      </Block>
-                    )
-                  )
-                )
+                blocks[currentIdx]  && ( render_block_to_table() )
               }
               </Container>
 
