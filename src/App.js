@@ -28,8 +28,6 @@ const Container = styled.div`
 const Block = styled.div`
   border: 1px solid #ddd;
   background-color: #fff;
-  // background-color: ${(props) => (props.isSelected ? '#ecf0f1' : '#fff')};
-  // background-color: ${(props) => (props.isSelected ? '#ecf0f1' : '#fff')};
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
@@ -64,10 +62,17 @@ const PromptBlock = styled.div`
 
 `;
 
+const BtnContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  
+`;
+
 const Button = styled.button`
-  display: block;
+  display: inline-block;
   width: 200px;
-  margin: 20px auto;
+  margin: 10px;
   padding: 10px;
   background-color: #8e44ad;
   color: white;
@@ -75,7 +80,6 @@ const Button = styled.button`
   border-radius: 20px;
   cursor: pointer;
   font-size: 16px;
-
   &:hover {
     background-color: #9b59b6;
   }
@@ -134,10 +138,11 @@ const SignOutButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-
+  margin: 5px;
+  width: 100px;
   &:hover {
     background-color: #9b59b6;
-  }
+  };
 `;
 
 function getRandomInt(max) {
@@ -147,13 +152,89 @@ function getRandomInt(max) {
 
 function App({ signOut, user }) {
   
-  const [selectedBlock, setSelectedBlock] = useState(null);
-  const [selectedPlannerType, setSelectedPlannerType] = useState(null);
   const [blocks, setBlocks] = useState([]);
+  const [selectToPlannerTypeMap, setSelectToPlannerTypeMap] = useState([]);
+  
   const [quizIDs, setQuizIDs] = useState([]);
   const [userPrefs, setUserPrefs] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
+  
   const [reachedEnd, setReachedEnd] = useState(false);
+  const [quizNum, setQuizNum] = useState(0);
+  
+
+  function submitChoice(username, choice) {
+    // alert(username);
+    saveUserSelection(username, choice); 
+    nextBlock();
+  }
+
+  function nextBlock() {
+    if (currentIdx < blocks.length - 1) {
+      setCurrentIdx((prevIndex) => (prevIndex + 1));
+      console.log(currentIdx);
+    } else {
+      setReachedEnd(true);
+    }
+  }
+
+  function saveUserSelection(username, chosen_block) {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var planner_type;
+    if (chosen_block === "A") {
+      planner_type = selectToPlannerTypeMap[currentIdx]["A"];
+    } else if (chosen_block === "B") {
+      planner_type = selectToPlannerTypeMap[currentIdx]["B"];
+    } else if (chosen_block === "Same") {
+      planner_type = "Same";
+    } else {
+      alert("Error chosen_block type!");
+      return;
+    }
+    
+    var raw = JSON.stringify({"user_id": username, "quiz_id": quizIDs[currentIdx], "chosen_block":chosen_block, "selected_planner_type": planner_type});
+    // alert(raw);
+    // create a JSON object with parameters for API call and store in a variable
+    var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+    };
+    // lambda function: dining-bm-ab-test-saving-selection
+    fetch("https://zwth43egf3.execute-api.us-east-1.amazonaws.com/dev", requestOptions)
+    .then(response => response.text())
+    // .then(result => alert(JSON.parse(result).body)) 
+    .catch(error => console.log('error', error));
+  
+  }
+
+  async function fetchUserQuiz(username) {
+    //lambda function: dining-bm-ab-test-fetch-quiz
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var raw = JSON.stringify({"user_id": username});
+    // create a JSON object with parameters for API call and store in a variable
+    var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+    };
+    
+    const url = "https://2ugdl7mz48.execute-api.us-east-1.amazonaws.com/dev";
+
+    try {
+      const response = await fetch(url, requestOptions);
+      const result = await response.text();
+      const parsed_result = JSON.parse(JSON.parse(result).body);
+      return parsed_result;
+    } catch (error) {
+        console.log('error', error);
+        throw error;
+    }
+  }
   
   
   const EndPage = () => (
@@ -177,7 +258,12 @@ function App({ signOut, user }) {
     const fetchData = async () => {
       try {
         const quizData = await fetchUserQuiz(user?.username);
+        if (quizData == undefined || quizData.length == 0) {
+          return;
+        }
+
         var allBlocks = [];
+        var allSelectToPlannerTypeMaps = []
         var allQuizIDs = [];
         var allUserPrefs = [];
 
@@ -201,8 +287,14 @@ function App({ signOut, user }) {
                 title: 'Recommendation B',
                 pois: test_pois.slice(0,20),
                 planner_type: "test"
-              }
-            ])
+              },
+            ]);
+
+            allSelectToPlannerTypeMaps.push({
+              "A": "origin",
+              "B": "test"
+            });
+
           } else {
             allBlocks.push([
               {
@@ -217,7 +309,13 @@ function App({ signOut, user }) {
                 pois: origin_pois.slice(0,20),
                 planner_type: "origin"
               }
-            ])
+            ]);
+            
+            allSelectToPlannerTypeMaps.push({
+              "A": "test",
+              "B": "origin"
+            });
+
           }
 
           // if (i === 0) {
@@ -228,6 +326,8 @@ function App({ signOut, user }) {
         setBlocks(allBlocks);
         setQuizIDs(allQuizIDs);
         setUserPrefs(allUserPrefs);
+        setSelectToPlannerTypeMap(allSelectToPlannerTypeMaps);
+        setQuizNum(quizData.length);
 
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -237,83 +337,11 @@ function App({ signOut, user }) {
   }, []); 
 
 
-  // function highlightSelection(id, planner_type) {
-  //   setSelectedBlock(null);
-  //   setSelectedPlannerType(null);
-  //   setSelectedBlock(id);
-  //   setSelectedPlannerType(planner_type);
-  // }
+  if (quizNum == undefined || quizNum == 0) {
+    return (<EndPage />);
+  } 
 
-  function submitChoice(username) {
-    if (selectedBlock) {
-      // alert('You Selected ' + selectedBlock + "which is " + selectedPlannerType + " planner");
-      saveUserSelection(); 
-      nextBlock();
-    } else {
-      alert('Please select one option before submit');
-    }
-  }
-
-  function nextBlock() {
-    if (currentIdx < blocks.length - 1) {
-      setCurrentIdx((prevIndex) => (prevIndex + 1));
-      console.log(currentIdx);
-    } else {
-      setReachedEnd(true);
-    }
-  }
-
-  function saveUserSelection(username) {
-    if (selectedBlock){
-      var myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      var raw = JSON.stringify({"user_id": username, "quiz_id": quizIDs[currentIdx], "selected_block":selectedBlock, "selected_planner_type": selectedPlannerType});
-      // create a JSON object with parameters for API call and store in a variable
-      var requestOptions = {
-          method: 'POST',
-          headers: myHeaders,
-          body: raw,
-          redirect: 'follow'
-      };
-      // lambda function: dining-bm-ab-test-saving-selection
-      fetch("https://zwth43egf3.execute-api.us-east-1.amazonaws.com/dev", requestOptions)
-      .then(response => response.text())
-      // .then(result => alert(JSON.parse(result).body))
-      .catch(error => console.log('error', error));
-    }
-  }
-
-  async function fetchUserQuiz(username) {
-    //lambda function: dining-bm-ab-test-fetch-quiz
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    var raw = JSON.stringify({"user_id": username});
-    // create a JSON object with parameters for API call and store in a variable
-    var requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-    };
-    
-    const url = "https://2ugdl7mz48.execute-api.us-east-1.amazonaws.com/dev";
-
-    try {
-      const response = await fetch(url, requestOptions);
-      const result = await response.text();
-      const parsed_result = JSON.parse(JSON.parse(result).body);
-
-      // console.log(parsed_result);
-      // console.log(parsed_result.origin);
-      return parsed_result;
-    } catch (error) {
-        console.log('error', error);
-        throw error;
-    }
-  }
-  
   return (
-
       <div>
         {
           reachedEnd ? (
@@ -348,10 +376,6 @@ function App({ signOut, user }) {
                       <Block
                         key={block.id}
                         id={`block${block.id}`}
-                        class="block"
-                        className={`block ${block.id === selectedBlock ? 'selected' : ''}`}
-                        // isSelected={block.id === selectedBlock}
-                        // onClick={() => highlightSelection(block.id, block.planner_type)}
                       >
                         <h2>{block.title}</h2>
                         <Table>
@@ -376,7 +400,12 @@ function App({ signOut, user }) {
                 )
               }
               </Container>
-                <Button onClick={ () => { submitChoice(user?.username); } }>Next</Button>
+
+              <BtnContainer>
+                <Button onClick={ () => { submitChoice(user?.username, "A"); } }>A is better</Button>
+                <Button onClick={ () => { submitChoice(user?.username, "B"); } }>B is better</Button>
+                <Button onClick={ () => { submitChoice(user?.username, "Same"); } }>Hard to tell</Button>
+              </BtnContainer>
             </Body>
           )
         }
