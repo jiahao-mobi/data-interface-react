@@ -27,8 +27,9 @@ const Container = styled.div`
 
 const Block = styled.div`
   border: 1px solid #ddd;
-  // background-color: #fff;
-  background-color: ${(props) => (props.isSelected ? '#ecf0f1' : '#fff')};
+  background-color: #fff;
+  // background-color: ${(props) => (props.isSelected ? '#ecf0f1' : '#fff')};
+  // background-color: ${(props) => (props.isSelected ? '#ecf0f1' : '#fff')};
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
@@ -110,9 +111,9 @@ const Table = styled.table`
     font-weight: bold;
   }
 
-  tr:hover {
-    background-color: #f1f1f1;
-  }
+  // tr:hover {
+  //   background-color: #f1f1f1;
+  // }
 `;
 
 
