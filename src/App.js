@@ -66,7 +66,7 @@ const BtnContainer = styled.div`
   display: flex;
   justify-content: center;
   gap: 10px;
-  
+
 `;
 
 const Button = styled.button`
@@ -338,7 +338,7 @@ function App({ signOut, user }) {
 
 
   if (quizNum == undefined || quizNum == 0) {
-    return (<EndPage />);
+    return (<div> </div>);
   } 
 
   return (
