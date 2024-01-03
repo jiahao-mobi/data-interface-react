@@ -400,11 +400,11 @@ function App({ signOut, user }) {
                   relevance of tags.
                 </p>
                 <p>
-                  For example, given user preference <b style={{ color: 'rgba(255,0,0,0.5)' }}>["Cupcake"]</b>, a dining POI
-                  with tag <b style={{ color: 'rgba(31, 24, 245, 0.5)' }}>["Cheesecake"]</b> is a better match than the one
-                  with <b style={{ color: 'rgba(31, 24, 245, 0.5)' }}>["Abalone"]</b>.
+                  For example, given user preference <b style={{ color: 'rgba(255,0,0,0.5)' }}>"Cupcake"</b>, a dining POI
+                  with tag <b style={{ color: 'rgba(31, 24, 245, 0.5)' }}>"Cheesecake"</b> is a better match than the one
+                  with <b style={{ color: 'rgba(31, 24, 245, 0.5)' }}>"Abalone"</b>.
                 </p>
-                <p>Now the user preference is <b style={{ color: 'rgba(255,0,0,0.5)' }}>{JSON.stringify(userPrefs[currentIdx])}</b>, which one do
+                <p>Now the user preference is <span class='bigger'><b style={{ color: 'rgba(255,0,0,0.7)' }}>{JSON.stringify(userPrefs[currentIdx])}</b></span>, which one do
                   you think is better?</p>
               </PromptBlock>
 
