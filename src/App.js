@@ -140,9 +140,9 @@ const SignOutButton = styled.button`
   };
 `;
 
-function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
-}
+// function getRandomInt(max) {
+//   return Math.floor(Math.random() * max);
+// }
 
 const scrollToTop = () => {
   window.scrollTo({
@@ -268,35 +268,14 @@ function App({ signOut, user }) {
         var allSelectToPlannerTypeMaps = []
         var allQuizIDs = [];
         var allUserPrefs = [];
-
+        
         for (let i=0; i<quizData.length; i++){
           var origin_pois = rec_poi_to_table(quizData[i]["origin_rec_pois"]);
           var test_pois = rec_poi_to_table(quizData[i]["test_rec_pois"]);
           allQuizIDs.push(quizData[i]["quiz_id"])
           allUserPrefs.push(quizData[i]["user_pref"])
           
-          if (getRandomInt(2) === 0) {
-            allBlocks.push([
-              {
-                id: 'A',
-                title: 'Recommendation A',
-                pois: origin_pois.slice(0,20),
-                planner_type: "origin"
-              },
-              {
-                id: 'B', 
-                title: 'Recommendation B',
-                pois: test_pois.slice(0,20),
-                planner_type: "test"
-              },
-            ]);
-
-            allSelectToPlannerTypeMaps.push({
-              "A": "origin",
-              "B": "test"
-            });
-
-          } else {
+          if(quizData[i]["display_order"]["A"] === "test") {
             allBlocks.push([
               {
                 id: 'A',
@@ -311,12 +290,29 @@ function App({ signOut, user }) {
                 planner_type: "origin"
               }
             ]);
-            
             allSelectToPlannerTypeMaps.push({
               "A": "test",
               "B": "origin"
             });
-
+          } else {
+            allBlocks.push([
+              {
+                id: 'A',
+                title: 'Recommendation A',
+                pois: origin_pois.slice(0,20),
+                planner_type: "origin"
+              },
+              {
+                id: 'B', 
+                title: 'Recommendation B',
+                pois: test_pois.slice(0,20),
+                planner_type: "test"
+              },
+            ]);
+            allSelectToPlannerTypeMaps.push({
+              "A": "origin",
+              "B": "test"
+            });
           }
         }
 
